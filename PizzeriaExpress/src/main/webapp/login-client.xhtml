@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="login">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>Login Cliente</h2>
+			<fieldset>
+				<legend>Dados do Cliente</legend>
+				<h:outputLabel value="E-mail" for="email"></h:outputLabel>
+				<p:inputText id="email" value="#{clientMB.client.email}"/>
+
+				<h:commandButton value="Enviar Código" action="#{clientMB.sendCode}" styleClass="btn">
+					<f:ajax execute="@form" render=":login"></f:ajax>
+				</h:commandButton>
+			</fieldset>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

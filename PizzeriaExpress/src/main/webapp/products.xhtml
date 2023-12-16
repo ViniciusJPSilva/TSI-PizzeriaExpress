@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="cadastro">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>
+				<h:outputText value="Novo Produto"
+					rendered="#{empty productMB.product.id}"></h:outputText>
+				<h:outputText value="Editar Produto"
+					rendered="#{not empty productMB.product.id}"></h:outputText>
+			</h2>
+			<p:fieldset legend="Dados do Produto">
+				<h:outputLabel value="Nome" for="name"></h:outputLabel>
+				<p:inputText id="name" value="#{productMB.product.name}">
+					<f:validator validatorId="firstLetterUpperCase"></f:validator>
+				</p:inputText>
+				
+				<h:outputLabel value="Descrição" for="description"></h:outputLabel>
+				<p:inputTextarea id="description"
+					value="#{productMB.product.description}" 
+					required="true" requiredMessage="Campo descrição requerido" 
+					validatorMessage="A descrição deve ter ao menos 5 caracteres">
+					<f:validateLength minimum="5"></f:validateLength>
+				</p:inputTextarea>
+				
+				<br></br>
+				<h:outputLabel value="Categoria" for="categoryMenu"></h:outputLabel>
+				<p:selectOneMenu id="categoryMenu" value="#{productMB.product.category}">
+				    <f:selectItems value="#{productMB.categoryList}" var="category"
+				   		itemValue="#{category}" itemLabel="#{category.description}" />
+				</p:selectOneMenu>
+				
+				<br></br>
+				<br></br>
+				<h:outputLabel value="Tamanho" for="sizeMenu"></h:outputLabel>
+				<p:selectOneMenu id="sizeMenu" value="#{productMB.product.size}">
+				    <f:selectItems value="#{productMB.itemSizeList}" var="size"
+				   		itemValue="#{size}" itemLabel="#{size.description}" />
+				</p:selectOneMenu>
+				
+				<br></br>
+				<br></br>
+				<h:outputLabel value="Disponibilidade" for="available"></h:outputLabel>
+				<p:selectBooleanCheckbox id="available" value="#{productMB.product.available}">
+				</p:selectBooleanCheckbox>
+				
+				<br></br>
+				<br></br>
+				<h:outputLabel value="Preço" for="price"/>
+					<p:inputText id="price" value="#{productMB.product.price}"
+					required="true" requiredMessage="Preço Obrigatório"
+					validatorMessage="O valor mínimo é R$0.50">
+					<f:validateDoubleRange minimum="0.50" />
+				</p:inputText>
+				
+				<br></br>
+				<h:commandButton value="Gravar" action="#{productMB.newProduct()}">
+					<f:ajax execute="@form" render=":cadastro :lista"></f:ajax>
+				</h:commandButton>
+				<h:commandButton value="Cancelar" action="#{productMB.cancel()}"
+					rendered="#{not empty productMB.product.id}">
+					<f:ajax render=":cadastro"></f:ajax>
+				</h:commandButton>
+			</p:fieldset>
+		</h:form>
+		<h:form id="lista">
+			<h2>Lista de Produtos</h2>
+			<p:dataTable value="#{productMB.productList}" var="product" styleClass="dados"
+				rowClasses="impar,par" paginator="true" rows="4">
+				<p:column headerText="Nome">#{product.name}</p:column>
+				<p:column headerText="Descrição">#{product.description}</p:column>
+				<p:column headerText="Tamanho">#{product.size.description}</p:column>
+				<p:column headerText="Categoria">#{product.category.description}</p:column>
+				<p:column headerText="Preço">
+					<h:outputText value="#{product.price}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Disponível?">
+					 <h:panelGroup>
+				        <h:outputLabel rendered="#{product.available}" style="text-align: center;">
+				            <i class="pi pi-check" style="color: green; text-align: center;" />
+				        </h:outputLabel>
+				        <h:outputLabel rendered="#{not product.available}" style="text-align: center;">
+				            <i class="pi pi-times" style="color: red; text-align: center;" />
+				        </h:outputLabel>
+				    </h:panelGroup>
+				</p:column>
+				<p:column headerText="Ações">
+					<h:commandLink value="Alterar" styleClass="btn">
+						<f:setPropertyActionListener value="#{product}"
+							target="#{productMB.product}"></f:setPropertyActionListener>
+						<f:ajax render=":cadastro"></f:ajax>
+					</h:commandLink>
+					<h:commandLink value="Remover" action="#{productMB.remove(product)}"
+						styleClass="btn btn-danger">
+						<f:ajax render="@form"></f:ajax>
+					</h:commandLink>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

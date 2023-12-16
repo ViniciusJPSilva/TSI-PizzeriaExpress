@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="cadastro">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>Faturamento do Dia</h2>
+			<p:fieldset>
+				<h:outputLabel value="Data" for="date"></h:outputLabel>
+				<p:calendar id="date" value="#{requestMB.searchDate.time}" pattern="dd/MM/yyyy">
+				    <p:ajax event="dateSelect" listener="#{requestMB.handleDateSelect}" update=":cadastro" />
+				</p:calendar>
+				
+				<br></br>
+				<h:outputLabel value="Total" for="total"></h:outputLabel>
+				<h:outputText value="#{requestMB.getTotalClosedRequests()}" id="total">
+					<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+				</h:outputText>	
+			</p:fieldset>
+			<p:dataTable value="#{requestMB.closedRequests}" var="req"
+				styleClass="dados" rowClasses="impar,par" paginator="true" rows="4">
+				<p:column>
+					<f:facet name="header">Mesa</f:facet>
+					<h:outputText value="#{req.tableNumber}">
+						<f:convertNumber pattern="N° #0"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Cliente</f:facet>
+					#{req.client.name}
+				</p:column>
+				<p:column>
+					<f:facet name="header">Valor</f:facet>
+					<h:outputText value="#{req.value}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

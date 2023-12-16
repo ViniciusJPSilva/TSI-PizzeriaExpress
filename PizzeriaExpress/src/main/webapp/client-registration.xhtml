@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="login">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>Finalizar Registro</h2>
+			<fieldset>
+				<legend>Dados do Novo Cliente</legend>
+				<h:outputLabel value="Nome" for="name"></h:outputLabel>
+				<p:inputText id="name" value="#{clientMB.client.name}"/>
+				
+				<h:outputLabel value="CPF" for="cpf"></h:outputLabel>
+				<p:inputMask id="cpf" value="#{clientMB.client.cpf}"
+							mask="999.999.999-99"></p:inputMask>
+				
+				<h:outputLabel value="E-mail" for="email"></h:outputLabel>
+				<p:inputText id="email" value="#{clientMB.client.email}"/>
+				
+				<h:outputLabel value="Telefone" for="phone"></h:outputLabel>
+				<p:inputMask id="phone" value="#{clientMB.client.phone}"
+							mask="(99) 9 9999-9999" ></p:inputMask>
+							
+				<h:outputLabel value="CEP" for="cep"></h:outputLabel>
+				<p:inputMask id="cep" value="#{clientMB.client.address.cep}" mask="99.999-999" >
+				    <f:ajax event="blur" execute="cep" render="street neighborhood city state" listener="#{clientMB.searchCEP}" />
+				</p:inputMask>
+
+				<h:outputLabel value="Logradouro" for="street"></h:outputLabel>
+				<p:inputText id="street" value="#{clientMB.client.address.street}"/>
+				
+				<h:outputLabel value="Bairro" for="neighborhood"></h:outputLabel>
+				<p:inputText id="neighborhood" value="#{clientMB.client.address.neighborhood}"/>
+				
+				<h:outputLabel value="Cidade" for="city"></h:outputLabel>
+				<p:inputText id="city" value="#{clientMB.client.address.city}"/>
+				
+				<h:outputLabel value="Estado" for="state"></h:outputLabel>
+				<p:inputText id="state" value="#{clientMB.client.address.state}"/>
+				
+				<h:outputLabel value="Número" for="number"></h:outputLabel>
+				<p:inputText id="number" value="#{clientMB.client.address.number}"/>
+				
+				
+				<br></br>
+				<h:commandButton value="Registrar" action="#{clientMB.create(component)}" styleClass="btn">
+					<f:ajax execute="@form" render=":login"></f:ajax>
+				</h:commandButton>
+			</fieldset>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

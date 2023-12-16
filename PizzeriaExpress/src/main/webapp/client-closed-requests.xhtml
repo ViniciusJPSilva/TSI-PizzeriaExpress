@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="cadastro">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>Histórico de Pedidos</h2>
+			<p:fieldset>
+				<p:dataTable value="#{requestMB.clientHistory}" var="req"
+				styleClass="dados" rowClasses="impar,par" paginator="true" rows="4">
+					<p:column>
+						<f:facet name="header">Mesa</f:facet>
+						<h:outputText value="#{req.tableNumber}">
+							<f:convertNumber pattern="N° #0"></f:convertNumber>
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<f:facet name="header">Data</f:facet>
+						<h:outputText value="#{req.date.time}">										
+							<f:convertDateTime type="date"  dateStyle="short" pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column>
+						<f:facet name="header">Itens</f:facet>
+						<p:selectOneMenu>
+				            <f:selectItem itemLabel="Ver Itens" itemValue="" noSelectionOption="true" />
+				            <f:selectItems value="#{req.items}" var="item" itemLabel="#{item.product.category eq 'DRINK' ? item.product.name : 'Pizza de '} #{item.product.category eq 'DRINK' ? item.product.description : item.product.name} - R$ #{item.product.price}" itemValue="#{item.id}" />
+				            <p:ajax listener="#{seuMB.atualizarStatus(item)}" update="@form" />
+				        </p:selectOneMenu>
+					</p:column>
+					<p:column>
+						<f:facet name="header">Total</f:facet>
+						<h:outputText value="#{req.value}">
+							<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

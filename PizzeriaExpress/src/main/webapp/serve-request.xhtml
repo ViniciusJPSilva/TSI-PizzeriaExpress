@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="cadastro">
+			<p:messages styleClass="erros"></p:messages>
+			<p:tabView>
+				<p:tab title="Atendendo - Mesa N° #{chefMB.chefRequest.tableNumber}">
+					<p:fieldset>
+						<h:outputLabel value="Mesa" for="table"></h:outputLabel>
+						<p:inputNumber readonly="true" id="table" value="#{chefMB.chefRequest.tableNumber}"/>
+						
+						<h:outputLabel value="Data" for="date"></h:outputLabel>
+						<p:calendar readonly="true" id="date" value="#{chefMB.chefRequest.date.time}"
+							pattern="dd/MM/yyyy"></p:calendar>
+							
+						<br></br>
+						<h:outputLabel value="Total" for="total"></h:outputLabel>
+						<h:outputText value="#{chefMB.chefRequest.value}" id="total">
+							<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+						</h:outputText>
+						
+					</p:fieldset>
+				</p:tab>
+			</p:tabView>
+		</h:form>
+		<h:form id="lista">
+			<p:dataTable value="#{chefMB.chefRequest.items}" var="item"
+				styleClass="dados" rowClasses="impar,par" paginator="true" rows="4">
+				<p:column>
+					<f:facet name="header">Produto</f:facet>
+					<h:outputText value="#{item.product.category eq 'DRINK' ? item.product.name : 'Pizza de '} #{item.product.category eq 'DRINK' ? item.product.description : item.product.name}"></h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Preço</f:facet>
+					<h:outputText value="#{item.unitPrice}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Quantidade</f:facet>
+					#{item.quantity}
+				</p:column>
+				<p:column>
+					<f:facet name="header">Total</f:facet>
+					<h:outputText value="#{item.totalCost}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Entregue</f:facet>
+					<p:selectBooleanCheckbox value="#{item.delivered}">
+					 	 <f:ajax render="lista" listener="#{chefMB.updateItemDeliveredState(item)}" />
+					</p:selectBooleanCheckbox>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+</ui:define>
+</ui:composition>
+</html>
+

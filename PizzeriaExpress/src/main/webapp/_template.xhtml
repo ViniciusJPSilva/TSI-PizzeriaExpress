@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Pizzaria Express</title>
+	<h:outputStylesheet name="style.css" library="css" />
+	<h:outputStylesheet library="primeicons" name="primeicons.css" />
+</h:head>
+<h:body>
+	<div id="cabecalho">
+		<h:graphicImage library="imagens" name="pizzeria-logo.png"
+			id="logoCompany" />
+		<div id="usuarioLogado">
+			<h:form rendered="#{not empty employeeMB.employee.name}">
+				<h:outputText class="message" value="Olá, ${employeeMB.employee.name}!" />
+			</h:form>
+			
+			<h:form rendered="#{not empty clientMB.client.name}">
+				<h:outputText class="message" value="Olá, ${clientMB.client.name}!" />
+			</h:form>
+		</div>
+	</div>
+
+	<div id="conteudo">
+		<h:form rendered="#{empty clientMB.client.name and empty employeeMB.employee.name}">
+			<p:menubar>
+				<p:menuitem value="Login Cliente" url="login-client.xhtml" />
+				<p:menuitem value="Login Funcionário" url="login-employee.xhtml" />
+			</p:menubar>
+		</h:form>
+		<h:form rendered="#{not empty clientMB.client.name and empty employeeMB.employee.name}">
+			<p:menubar>
+				<p:menuitem value="Fazer Pedido" url="menu-client.xhtml" />
+				<p:menuitem value="Alterar Dados" url="client-change-data.xhtml" />
+				<p:menuitem value="Histórico" url="client-closed-requests.xhtml" />
+				<p:menuitem value="Fidelidade" url="client-voucher-requests.xhtml" />
+				<p:menuitem value="Sair" action="#{clientMB.logout}" />
+			</p:menubar>
+		</h:form>
+		<h:form rendered="#{empty clientMB.client.name and not empty employeeMB.employee.name}">
+			<p:menubar rendered="#{employeeMB.employee.type eq 'ADMIN'}">
+				<p:menuitem value="Faturamento" url="menu-admin.xhtml" />
+				<p:menuitem value="Produtos" url="products.xhtml" />
+				<p:menuitem value="Sair" action="#{employeeMB.logout}" />
+			</p:menubar>
+			<p:menubar rendered="#{employeeMB.employee.type eq 'CHEF'}">
+				<p:menuitem value="Pedidos" url="menu-chef.xhtml" />
+				<p:menuitem value="Sair" action="#{employeeMB.logout}" />
+			</p:menubar>
+		</h:form>
+	
+		<ui:insert name="body"></ui:insert>
+	</div>
+
+	<div id="rodape">Copyright 2023. Todos os Direitos reservados a Vinicius J P Silva.</div>
+</h:body>
+</html>

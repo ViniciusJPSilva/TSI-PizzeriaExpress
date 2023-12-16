@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<ui:composition template="_template.xhtml" >
+<ui:define name="body">
+	<h:outputScript name="jsf.js" library="javax.faces" target="head"></h:outputScript>
+		<h:form id="cadastro">
+			<p:messages styleClass="erros"></p:messages>
+			<h2>Pedido</h2>
+			<p:tabView>
+				<p:tab title="#{requestMB.hasRequest() ? 'Finalizar Pedido' : 'Selecionar Mesa'}">
+					<p:fieldset>
+						<h:outputLabel value="Mesa" for="table"></h:outputLabel>
+						<p:inputNumber readonly="#{requestMB.hasRequest()}" id="table" value="#{requestMB.request.tableNumber}"/>
+						
+						<h:outputLabel value="Data" for="date" rendered="#{requestMB.hasRequest()}"></h:outputLabel>
+						<p:calendar readonly="true" id="date" value="#{requestMB.request.date.time}"
+							pattern="dd/MM/yyyy" rendered="#{requestMB.hasRequest()}"></p:calendar>
+							
+						<br></br>
+						<h:outputLabel value="Total" for="total" rendered="#{requestMB.hasRequest()}"></h:outputLabel>
+						<h:outputText value="#{requestMB.request.value}" id="total" rendered="#{requestMB.hasRequest()}">
+							<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+						</h:outputText>
+					
+						<br></br>
+						<br></br>
+						<h:outputLabel value="Aplicar Voucher" for="voucher" rendered="#{requestMB.hasRequest() and clientMB.client.voucher ge clientMB.redemptionValue}"></h:outputLabel>
+						<p:selectBooleanCheckbox id="voucher" value="#{requestMB.request.voucher}" rendered="#{requestMB.hasRequest() and clientMB.client.voucher ge clientMB.redemptionValue}">
+							<f:ajax render="cadastro" listener="#{requestMB.updateRequestVoucher()}" />
+						</p:selectBooleanCheckbox>
+						
+						<br></br>
+						<br></br>
+						<h:commandButton value="Reservar" action="#{requestMB.setTable(clientMB.client.id)}" styleClass="btn" rendered="#{empty requestMB.request.tableNumber}">
+							<f:ajax execute="@form" render=":cadastro"></f:ajax>
+						</h:commandButton>
+						
+						<h:commandButton value="Finalizar Pedido" action="#{requestMB.finishRequest(component)}" styleClass="btn" rendered="#{requestMB.hasRequest()}" immediate="true">
+							<f:ajax execute="@form" render=":cadastro"></f:ajax>
+						</h:commandButton>
+						
+					</p:fieldset>
+				</p:tab>
+				<p:tab title="Adicionar Item" rendered="#{requestMB.hasRequest()}">
+					<p:fieldset>
+						<h:outputLabel value="Quantidade" for="quantity"></h:outputLabel>
+						<p:inputText id="quantity" value="#{requestMB.item.quantity}" 
+								required="true" requiredMessage="Quantidade obrigatória"
+								validatorMessage="O valor mínimo 1">
+								<f:validateDoubleRange minimum="1" />
+						</p:inputText>
+						
+						<br></br>
+						<h:outputLabel value="Categoria" for="categoryMenu"></h:outputLabel>
+						<p:selectOneMenu id="categoryMenu" value="#{productMB.selectedCategory}">
+						    <f:selectItems value="#{productMB.categoryList}" var="category"
+						   		itemValue="#{category}" itemLabel="#{category.description}" />
+						    <p:ajax update="productMenu" />
+						</p:selectOneMenu>
+						
+						<br></br>
+						<br></br>
+						<h:outputLabel value="Produto" for="productMenu"></h:outputLabel>
+						<p:selectOneMenu id="productMenu" value="#{requestMB.itemId}">
+						    <f:selectItems value="#{productMB.getProductListByCategory(productMB.selectedCategory)}" var="product"
+						                   itemValue="#{product.id}" 
+						                   itemLabel="#{product.id} - #{product.category eq 'DRINK' ? product.name : 'Pizza de '} #{product.category eq 'DRINK' ? product.description : product.name} - #{product.size.description} - R$ #{product.price}"
+						    >
+						    </f:selectItems>
+						</p:selectOneMenu>
+						
+						<br></br>
+						<br></br>
+						<h:commandButton value="Adicionar" action="#{requestMB.addItem}">
+							<f:ajax execute="@form" render=":cadastro"></f:ajax>
+						</h:commandButton>
+					</p:fieldset>
+				</p:tab>
+			</p:tabView>
+			<p:dataTable value="#{requestMB.request.items}" var="item"
+				styleClass="dados" rowClasses="impar,par" paginator="true" rows="4" rendered="#{requestMB.hasRequest()}">
+				<p:column>
+					<f:facet name="header">Produto</f:facet>
+					<h:outputText value="#{item.product.category eq 'DRINK' ? item.product.name : 'Pizza de '} #{item.product.category eq 'DRINK' ? item.product.description : item.product.name}"></h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Preço</f:facet>
+					<h:outputText value="#{item.unitPrice}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Quantidade</f:facet>
+					#{item.quantity}
+				</p:column>
+				<p:column>
+					<f:facet name="header">Total</f:facet>
+					<h:outputText value="#{item.totalCost}">
+						<f:convertNumber pattern="R$ #0.00"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">Entregue</f:facet>
+					 <h:panelGroup>
+				        <h:outputLabel rendered="#{item.delivered}" style="text-align: center;">
+				            <i class="pi pi-check" style="color: green; text-align: center;" />
+				        </h:outputLabel>
+				        <h:outputLabel rendered="#{not item.delivered}" style="text-align: center;">
+				            <i class="pi pi-times" style="color: red; text-align: center;" />
+				        </h:outputLabel>
+				    </h:panelGroup>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+		
+</ui:define>
+</ui:composition>
+</html>
+
